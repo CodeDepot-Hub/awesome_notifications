@@ -42,7 +42,15 @@ class NotificationController {
               importance: NotificationImportance.High,
               defaultPrivacy: NotificationPrivacy.Private,
               defaultColor: Colors.deepPurple,
-              ledColor: Colors.deepPurple)
+              ledColor: Colors.deepPurple),
+          NotificationChannel(
+            channelKey: 'basic_channel',
+            channelName: 'Basic Notifications',
+            channelDescription: 'Channel for basic notifications',
+            importance: NotificationImportance.High,
+            defaultColor: Colors.teal,
+            ledColor: Colors.white,
+          ),
         ],
         debug: true);
 
@@ -235,7 +243,7 @@ class NotificationController {
         msg: 'test message',
         heroThumbUrl:
             'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
-        hoursFromNow: 5,
+        hoursFromNow: 0,
         username: 'test user',
         repeatNotif: false);
   }
@@ -257,18 +265,16 @@ Future<void> myNotifyScheduleInHours({
   required String msg,
   bool repeatNotif = false,
 }) async {
-  var nowDate = DateTime.now().add(Duration(hours: hoursFromNow, seconds: 5));
+  var nowDate = DateTime.now()
+      .add(Duration(hours: hoursFromNow, minutes: 0, seconds: 30));
+
   await AwesomeNotifications().createNotification(
-    schedule: NotificationCalendar(
-      //weekday: nowDate.day,
-      hour: nowDate.hour,
-      minute: 0,
-      second: nowDate.second,
+    schedule: NotificationCalendar.fromDate(
+      date: nowDate,
+      // allowWhileIdle: false,
+      // preciseAlarm: true,
       repeats: repeatNotif,
-      //allowWhileIdle: true,
     ),
-    // schedule: NotificationCalendar.fromDate(
-    //    date: DateTime.now().add(const Duration(seconds: 10))),
     content: NotificationContent(
       id: -1,
       channelKey: 'basic_channel',
@@ -276,10 +282,8 @@ Future<void> myNotifyScheduleInHours({
       body: '$username, $msg',
       bigPicture: heroThumbUrl,
       notificationLayout: NotificationLayout.BigPicture,
-      //actionType : ActionType.DismissAction,
       color: Colors.black,
       backgroundColor: Colors.black,
-      // customSound: 'resource://raw/notif',
       payload: {'actPag': 'myAct', 'actType': 'food', 'username': username},
     ),
     actionButtons: [
