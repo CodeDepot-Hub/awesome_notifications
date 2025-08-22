@@ -311,19 +311,19 @@ public class SwiftAwesomeNotificationsPlugin:
         }
     }
     
-    private func channelMethodGetDrawableData(call: FlutterMethodCall, result: @escaping FlutterResult) throws {
-        let bitmapReference: String = call.arguments as! String
-        guard let data: Data =
-            awesomeNotifications?
-                .getDrawableData(bitmapReference: bitmapReference)
-        else {
-            result(nil)
+    private func channelMethodGetDrawableData(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        
+        guard let bitmapReference = call.arguments as? String else {
+            result(FlutterError(code: "ARGUMENT_ERROR", message: "bitmapReference must be a String", details: nil))
             return
         }
         
-        result(
-            FlutterStandardTypedData
-            (bytes: data))
+        guard let data = awesomeNotifications?.getDrawableData(bitmapReference: bitmapReference) else {
+            result(FlutterError(code: "NULL_DATA", message: "No drawable found for \(bitmapReference)", details: nil))
+            return
+        }
+
+        result(FlutterStandardTypedData(bytes: data))
     }
     
     private func channelMethodSetChannel(call: FlutterMethodCall, result: @escaping FlutterResult) throws {
